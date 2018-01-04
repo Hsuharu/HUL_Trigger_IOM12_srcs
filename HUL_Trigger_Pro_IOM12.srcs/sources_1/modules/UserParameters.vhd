@@ -145,14 +145,15 @@ package AddressMap is
           constant  PS_Coin1            : localaddresstype := x"d40"; -- w/r, [3:0], 
           constant  PS_Coin2            : localaddresstype := x"d50"; -- w/r, [3:0], 
           constant  PS_For_E03          : localaddresstype := x"d60"; -- w/r, [3:0], 
+          constant  RSR_PSCNT           : localaddresstype := x"d70"; -- w/r, [0], 
 
---        constant  PWM_BH2_Pi          : localaddresstype := x"b00"; -- w/r, [3:0], 
---          constant  PWM_Beam_TOF        : localaddresstype := x"b10"; -- w/r, [3:0], 
---          constant  PWM_Beam_Pi         : localaddresstype := x"b20"; -- w/r, [3:0], 
---          constant  PWM_Beam_P          : localaddresstype := x"b30"; -- w/r, [3:0], 
---          constant  PWM_Coin1           : localaddresstype := x"b40"; -- w/r, [3:0], 
---          constant  PWM_Coin2           : localaddresstype := x"b50"; -- w/r, [3:0], 
---          constant  PWM_For_E03         : localaddresstype := x"b60"; -- w/r, [3:0], 
+          constant  PWM_BH2_Pi          : localaddresstype := x"b00"; -- w/r, [3:0], 
+          constant  PWM_Beam_TOF        : localaddresstype := x"b10"; -- w/r, [3:0], 
+          constant  PWM_Beam_Pi         : localaddresstype := x"b20"; -- w/r, [3:0], 
+          constant  PWM_Beam_P          : localaddresstype := x"b30"; -- w/r, [3:0], 
+          constant  PWM_Coin1           : localaddresstype := x"b40"; -- w/r, [3:0], 
+          constant  PWM_Coin2           : localaddresstype := x"b50"; -- w/r, [3:0], 
+          constant  PWM_For_E03         : localaddresstype := x"b60"; -- w/r, [3:0], 
   
           constant  DLY_PS_OR           : localaddresstype := x"a00"; -- w/r, [4:0], 
   

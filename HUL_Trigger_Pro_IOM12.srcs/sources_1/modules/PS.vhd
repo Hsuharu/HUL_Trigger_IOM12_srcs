@@ -107,6 +107,8 @@ begin
 		        counter <= counter + '1';
     		      if(counter = counter_max ) then
                        counter  <= ( others => '0');
+              else
+		        counter <= counter + '1';
                   end if;
 		  end if;
 	end process;
