@@ -36,6 +36,7 @@ entity Region3 is
 	        PS_OR_DLY       : out std_logic;
 	        K_Scat_Else_OR  : out std_logic;
 	        Else_OR         : out std_logic;
+	        Else_OR_DLY     : out std_logic;
 
             	-- Local bus --
             	addrLocalBus    : in LocalAddressType;
@@ -62,13 +63,13 @@ architecture RTL of Region3 is
   signal Coin1_PS_Pre             : std_logic;
   signal Coin2_PS_Pre             : std_logic;
   signal For_E03_PS_Pre           : std_logic;
-  signal BH2_Pi_PWM            : std_logic;
-  signal Beam_TOF_PWM          : std_logic;
-  signal Beam_Pi_PWM           : std_logic;
-  signal Beam_P_PWM            : std_logic;
-  signal Coin1_PWM             : std_logic;
-  signal Coin2_PWM             : std_logic;
-  signal For_E03_PWM           : std_logic;
+--  signal BH2_Pi_PWM            : std_logic;
+--  signal Beam_TOF_PWM          : std_logic;
+--  signal Beam_Pi_PWM           : std_logic;
+--  signal Beam_P_PWM            : std_logic;
+--  signal Coin1_PWM             : std_logic;
+--  signal Coin2_PWM             : std_logic;
+--  signal For_E03_PWM           : std_logic;
   signal in_BH2_Pi_PS          : std_logic;
   signal in_Beam_TOF_PS        : std_logic;
   signal in_Beam_Pi_PS         : std_logic;
@@ -77,6 +78,7 @@ architecture RTL of Region3 is
   signal in_Coin2_PS           : std_logic;
   signal in_For_E03_PS         : std_logic;
   signal in_PS_OR_DLY          : std_logic;
+  signal in_Else_OR_DLY          : std_logic;
   signal in_K_Scat_Else_OR     : std_logic;
   signal in_Else_OR            : std_logic;
   signal PS_OR_Pre             : std_logic;
@@ -93,16 +95,17 @@ architecture RTL of Region3 is
   signal reg_counter_For_E03            : std_logic_vector(23 downto 0);
 
   -- For PWM -----------------------------------------------------------------
-  signal reg_counter_BH2_Pi_PWM         : std_logic_vector(3 downto 0);
-  signal reg_counter_Beam_TOF_PWM       : std_logic_vector(3 downto 0);
-  signal reg_counter_Beam_Pi_PWM        : std_logic_vector(3 downto 0);
-  signal reg_counter_Beam_P_PWM         : std_logic_vector(3 downto 0);
-  signal reg_counter_Coin1_PWM          : std_logic_vector(3 downto 0);
-  signal reg_counter_Coin2_PWM          : std_logic_vector(3 downto 0);
-  signal reg_counter_For_E03_PWM        : std_logic_vector(3 downto 0);
+--  signal reg_counter_BH2_Pi_PWM         : std_logic_vector(3 downto 0);
+--  signal reg_counter_Beam_TOF_PWM       : std_logic_vector(3 downto 0);
+--  signal reg_counter_Beam_Pi_PWM        : std_logic_vector(3 downto 0);
+--  signal reg_counter_Beam_P_PWM         : std_logic_vector(3 downto 0);
+--  signal reg_counter_Coin1_PWM          : std_logic_vector(3 downto 0);
+--  signal reg_counter_Coin2_PWM          : std_logic_vector(3 downto 0);
+--  signal reg_counter_For_E03_PWM        : std_logic_vector(3 downto 0);
 
   -- For DLY ------------------------------------------------------------------
   signal reg_DLY_PS_or                  : std_logic_vector(4 downto 0);
+  signal reg_DLY_Else_or                  : std_logic_vector(4 downto 0);
 
   -- For DPWM -----------------------------------------------------------------
     -- For Delay --
@@ -132,15 +135,15 @@ architecture RTL of Region3 is
                );
      end component;
    
-  -- PWM --    
-     component PWM is
+  -- PWC --    
+     component PWC is
        port(
          rst                 : in std_logic;
          clk_trg             : in std_logic;
          
          -- input signal --
            in1   : in  std_logic;
-           reg_counter  : in  std_logic_vector(3 downto 0);
+--           reg_counter  : in  std_logic_vector(3 downto 0);
          
          -- output signal --
            out1  : out std_logic
@@ -189,16 +192,25 @@ begin
 	Coin2_PS         <=  PS_or_vector(1)              ; 
 	For_E03_PS       <=  PS_or_vector(0)              ; 
 	PS_OR_DLY        <=  in_PS_OR_DLY                 ; 
+	Else_OR_DLY      <=  in_Else_OR_DLY                 ; 
 	K_Scat_Else_OR   <=  in_K_Scat_Else_OR            ; 
 	Else_OR          <=  in_Else_OR                   ; 
         
-	PS_or_vector(6)  <= BH2_Pi_PS_Pre    when( reg_ctrl(6) = '1' ) else '0'; 
-        PS_or_vector(5)  <= Beam_TOF_PS_Pre  when( reg_ctrl(5) = '1' ) else '0'; 
-        PS_or_vector(4)  <= Beam_Pi_PS_Pre   when( reg_ctrl(4) = '1' ) else '0'; 
-        PS_or_vector(3)  <= Beam_P_PS_Pre    when( reg_ctrl(3) = '1' ) else '0'; 
-        PS_or_vector(2)  <= Coin1_PS_Pre     when( reg_ctrl(2) = '1' ) else '0'; 
-        PS_or_vector(1)  <= Coin2_PS_Pre     when( reg_ctrl(1) = '1' ) else '0'; 
-        PS_or_vector(0)  <= For_E03_PS_Pre   when( reg_ctrl(0) = '1' ) else '0'; 
+--	PS_or_vector(6)  <= BH2_Pi_PS_Pre    when( reg_ctrl(6) = '1' ) else '0'; 
+--        PS_or_vector(5)  <= Beam_TOF_PS_Pre  when( reg_ctrl(5) = '1' ) else '0'; 
+--        PS_or_vector(4)  <= Beam_Pi_PS_Pre   when( reg_ctrl(4) = '1' ) else '0'; 
+--        PS_or_vector(3)  <= Beam_P_PS_Pre    when( reg_ctrl(3) = '1' ) else '0'; 
+--        PS_or_vector(2)  <= Coin1_PS_Pre     when( reg_ctrl(2) = '1' ) else '0'; 
+--        PS_or_vector(1)  <= Coin2_PS_Pre     when( reg_ctrl(1) = '1' ) else '0'; 
+--        PS_or_vector(0)  <= For_E03_PS_Pre   when( reg_ctrl(0) = '1' ) else '0'; 
+	
+	PS_or_vector(6)  <= in_BH2_Pi_PS    when( reg_ctrl(6) = '1' ) else '0'; 
+        PS_or_vector(5)  <= in_Beam_TOF_PS  when( reg_ctrl(5) = '1' ) else '0'; 
+        PS_or_vector(4)  <= in_Beam_Pi_PS   when( reg_ctrl(4) = '1' ) else '0'; 
+        PS_or_vector(3)  <= in_Beam_P_PS    when( reg_ctrl(3) = '1' ) else '0'; 
+        PS_or_vector(2)  <= in_Coin1_PS     when( reg_ctrl(2) = '1' ) else '0'; 
+        PS_or_vector(1)  <= in_Coin2_PS     when( reg_ctrl(1) = '1' ) else '0'; 
+        PS_or_vector(0)  <= in_For_E03_PS   when( reg_ctrl(0) = '1' ) else '0'; 
 	
 --	PS_OR_Pre        <= or_reduce(PS_or_vector);
 	PS_OR_Pre        <= '0' when(PS_or_vector ="0000000") else '1';
@@ -285,87 +297,166 @@ begin
     reg_counter    => reg_counter_For_E03
   );
 	
-  -- PWM ---------------------------------------------------------------------	
-  BH2_Pi_PS_PWM_Inst : PWM
+--  -- PWM ---------------------------------------------------------------------	
+--  BH2_Pi_PS_PWM_Inst : PWM
+--	port map(
+--	    rst             => rst    ,
+--	    clk_trg         => clk_trg,
+--	    
+--	    -- input signal --
+--	    in1             =>BH2_Pi_PS_Pre,
+--	    reg_counter     =>reg_counter_BH2_Pi_PWM,
+--	    -- output signal
+--	    out1            =>in_BH2_Pi_PS
+--	);
+--
+--  Beam_TOF_PS_PWM_Inst : PWM
+--	port map(
+--	    rst             => rst    ,
+--	    clk_trg         => clk_trg,
+--	    
+--	    -- input signal --
+--	    in1             =>Beam_TOF_PS_Pre,
+--	    reg_counter     =>reg_counter_Beam_TOF_PWM,
+--	    -- output signal
+--	    out1            =>in_Beam_TOF_PS
+--	);
+--
+--  Beam_Pi_PS_PWM_Inst : PWM
+--	port map(
+--	    rst             => rst    ,
+--	    clk_trg         => clk_trg,
+--	    
+--	    -- input signal --
+--	    in1             =>Beam_Pi_PS_Pre,
+--	    reg_counter     =>reg_counter_Beam_Pi_PWM,
+--	    -- output signal
+--	    out1            =>in_Beam_Pi_PS
+--	);
+--
+--  Beam_P_PS_PWM_Inst : PWM
+--	port map(
+--	    rst             => rst    ,
+--	    clk_trg         => clk_trg,
+--	    
+--	    -- input signal --
+--	    in1             =>Beam_P_PS_Pre,
+--	    reg_counter     =>reg_counter_Beam_P_PWM,
+--	    -- output signal
+--	    out1            =>in_Beam_P_PS
+--	);
+--
+--  Coin1_PS_PWM_Inst : PWM
+--	port map(
+--	    rst             => rst    ,
+--	    clk_trg         => clk_trg,
+--	    
+--	    -- input signal --
+--	    in1             =>Coin1_PS_Pre,
+--	    reg_counter     =>reg_counter_Coin1_PWM,
+--	    -- output signal
+--	    out1            =>in_Coin1_PS
+--	);
+--
+--  Coin2_PS_PWM_Inst : PWM
+--	port map(
+--	    rst             => rst    ,
+--	    clk_trg         => clk_trg,
+--	    
+--	    -- input signal --
+--	    in1             =>Coin2_PS_Pre,
+--	    reg_counter     =>reg_counter_Coin2_PWM,
+--	    -- output signal
+--	    out1            =>in_Coin2_PS
+--	);
+--
+--  For_E03_PS_PWM_Inst : PWM
+--	port map(
+--	    rst             => rst    ,
+--	    clk_trg         => clk_trg,
+--	    
+--	    -- input signal --
+--	    in1             =>For_E03_PS_Pre,
+--	    reg_counter     =>reg_counter_BH2_Pi_PWC,
+--	    reg_counter     =>reg_counter_For_E03_PWM,
+--	    -- output signal
+--	    out1            =>in_For_E03_PS
+--	);
+	
+  -- PWC ---------------------------------------------------------------------	
+  BH2_Pi_PS_PWC_Inst : PWC
 	port map(
 	    rst             => rst    ,
 	    clk_trg         => clk_trg,
 	    
 	    -- input signal --
 	    in1             =>BH2_Pi_PS_Pre,
-	    reg_counter     =>reg_counter_BH2_Pi_PWM,
 	    -- output signal
 	    out1            =>in_BH2_Pi_PS
 	);
 
-  Beam_TOF_PS_PWM_Inst : PWM
+  Beam_TOF_PS_PWC_Inst : PWC
 	port map(
 	    rst             => rst    ,
 	    clk_trg         => clk_trg,
 	    
 	    -- input signal --
 	    in1             =>Beam_TOF_PS_Pre,
-	    reg_counter     =>reg_counter_Beam_TOF_PWM,
 	    -- output signal
 	    out1            =>in_Beam_TOF_PS
 	);
 
-  Beam_Pi_PS_PWM_Inst : PWM
+  Beam_Pi_PS_PWC_Inst : PWC
 	port map(
 	    rst             => rst    ,
 	    clk_trg         => clk_trg,
 	    
 	    -- input signal --
 	    in1             =>Beam_Pi_PS_Pre,
-	    reg_counter     =>reg_counter_Beam_Pi_PWM,
 	    -- output signal
 	    out1            =>in_Beam_Pi_PS
 	);
 
-  Beam_P_PS_PWM_Inst : PWM
+  Beam_P_PS_PWC_Inst : PWC
 	port map(
 	    rst             => rst    ,
 	    clk_trg         => clk_trg,
 	    
 	    -- input signal --
 	    in1             =>Beam_P_PS_Pre,
-	    reg_counter     =>reg_counter_Beam_P_PWM,
 	    -- output signal
 	    out1            =>in_Beam_P_PS
 	);
 
-  Coin1_PS_PWM_Inst : PWM
+  Coin1_PS_PWC_Inst : PWC
 	port map(
 	    rst             => rst    ,
 	    clk_trg         => clk_trg,
 	    
 	    -- input signal --
 	    in1             =>Coin1_PS_Pre,
-	    reg_counter     =>reg_counter_Coin1_PWM,
 	    -- output signal
 	    out1            =>in_Coin1_PS
 	);
 
-  Coin2_PS_PWM_Inst : PWM
+  Coin2_PS_PWC_Inst : PWC
 	port map(
 	    rst             => rst    ,
 	    clk_trg         => clk_trg,
 	    
 	    -- input signal --
 	    in1             =>Coin2_PS_Pre,
-	    reg_counter     =>reg_counter_Coin2_PWM,
 	    -- output signal
 	    out1            =>in_Coin2_PS
 	);
 
-  For_E03_PS_PWM_Inst : PWM
+  For_E03_PS_PWC_Inst : PWC
 	port map(
 	    rst             => rst    ,
 	    clk_trg         => clk_trg,
 	    
 	    -- input signal --
 	    in1             =>For_E03_PS_Pre,
-	    reg_counter     =>reg_counter_For_E03_PWM,
 	    -- output signal
 	    out1            =>in_For_E03_PS
 	);
@@ -381,6 +472,19 @@ begin
             reg_delay            => reg_DLY_PS_OR ,
             -- output signal -- 
             delayout           => in_PS_OR_DLY  
+  
+            );
+
+  Else_OR_Delay_Inst : DLY 
+	port map(
+	    rst             => rst    ,
+	    clk_trg         => clk_trg,
+      
+            -- input signal --
+	    delayin            => in_Else_OR, 
+            reg_delay            => reg_DLY_Else_OR ,
+            -- output signal -- 
+            delayout           => in_Else_OR_DLY  
   
             );
 
@@ -430,15 +534,16 @@ begin
           reg_counter_Coin2             <= (others => '1');
           reg_counter_For_E03           <= (others => '1');
 
-          reg_counter_BH2_Pi_PWM            <= (others => '1');
-          reg_counter_Beam_TOF_PWM          <= (others => '1');
-          reg_counter_Beam_Pi_PWM           <= (others => '1');
-          reg_counter_Beam_P_PWM            <= (others => '1');
-          reg_counter_Coin1_PWM             <= (others => '1');
-          reg_counter_Coin2_PWM             <= (others => '1');
-          reg_counter_For_E03_PWM           <= (others => '1');
+--          reg_counter_BH2_Pi_PWM            <= (others => '1');
+--          reg_counter_Beam_TOF_PWM          <= (others => '1');
+--          reg_counter_Beam_Pi_PWM           <= (others => '1');
+--          reg_counter_Beam_P_PWM            <= (others => '1');
+--          reg_counter_Coin1_PWM             <= (others => '1');
+--          reg_counter_Coin2_PWM             <= (others => '1');
+--          reg_counter_For_E03_PWM           <= (others => '1');
 
           reg_DLY_PS_OR                     <= (others => '1');
+          reg_DLY_Else_OR                     <= (others => '1');
 	  
           reg_delay_Else_OR_Pre             <= (others => '1');
           reg_delay_K_Scat_Pre              <= (others => '1');
@@ -446,7 +551,7 @@ begin
           reg_counter_K_Scat_Pre              <= (others => '1');
 
           reg_ctrl                            <= (others => '1');
-          reg_RST                             <= (others => '0');
+          reg_RST                             <= '0';
 
           state_lbus          <= Idle;
 
@@ -473,15 +578,16 @@ begin
             when PS_Coin2    =>  reg_counter_Coin2     <= dataLocalBusIn(23 downto 0);
             when PS_For_E03  =>  reg_counter_For_E03   <= dataLocalBusIn(23 downto 0);
 
-            when PWM_BH2_Pi   =>  reg_counter_BH2_Pi_PWM    <= dataLocalBusIn( 3 downto 0);
-            when PWM_Beam_TOF =>  reg_counter_Beam_TOF_PWM  <= dataLocalBusIn( 3 downto 0);
-            when PWM_Beam_Pi  =>  reg_counter_Beam_Pi_PWM   <= dataLocalBusIn( 3 downto 0);
-            when PWM_Beam_P   =>  reg_counter_Beam_P_PWM    <= dataLocalBusIn( 3 downto 0);
-            when PWM_Coin1    =>  reg_counter_Coin1_PWM     <= dataLocalBusIn( 3 downto 0);
-            when PWM_Coin2    =>  reg_counter_Coin2_PWM     <= dataLocalBusIn( 3 downto 0);
-            when PWM_For_E03  =>  reg_counter_For_E03_PWM   <= dataLocalBusIn( 3 downto 0);
+--            when PWM_BH2_Pi   =>  reg_counter_BH2_Pi_PWM    <= dataLocalBusIn( 3 downto 0);
+--            when PWM_Beam_TOF =>  reg_counter_Beam_TOF_PWM  <= dataLocalBusIn( 3 downto 0);
+--            when PWM_Beam_Pi  =>  reg_counter_Beam_Pi_PWM   <= dataLocalBusIn( 3 downto 0);
+--            when PWM_Beam_P   =>  reg_counter_Beam_P_PWM    <= dataLocalBusIn( 3 downto 0);
+--            when PWM_Coin1    =>  reg_counter_Coin1_PWM     <= dataLocalBusIn( 3 downto 0);
+--            when PWM_Coin2    =>  reg_counter_Coin2_PWM     <= dataLocalBusIn( 3 downto 0);
+--            when PWM_For_E03  =>  reg_counter_For_E03_PWM   <= dataLocalBusIn( 3 downto 0);
 
             when DLY_PS_OR    =>  reg_DLY_PS_OR             <= dataLocalBusIn( 4  downto 0);
+            when DLY_Else_OR    =>  reg_DLY_Else_OR           <= dataLocalBusIn( 4  downto 0);
 
             when DPWM_delay_Else_OR   => reg_delay_Else_OR_Pre   <= dataLocalBusIn( 4 downto 0);
             when DPWM_delay_K_Scat    => reg_delay_K_Scat_Pre    <= dataLocalBusIn( 4 downto 0);
@@ -571,15 +677,16 @@ begin
 --            when PS_Coin2    =>   dataLocalBusOut <= "0000" & reg_counter_Coin2   ;
 --            when PS_For_E03  =>   dataLocalBusOut <= "0000" & reg_counter_For_E03 ;
 
-            when PWM_BH2_Pi( 11 downto 4)   =>   dataLocalBusOut <= "0000" & reg_counter_BH2_Pi_PWM  ;
-            when PWM_Beam_TOF( 11 downto 4) =>   dataLocalBusOut <= "0000" & reg_counter_Beam_TOF_PWM;
-            when PWM_Beam_Pi( 11 downto 4)  =>   dataLocalBusOut <= "0000" & reg_counter_Beam_Pi_PWM ;
-            when PWM_Beam_P( 11 downto 4)   =>   dataLocalBusOut <= "0000" & reg_counter_Beam_P_PWM  ;
-            when PWM_Coin1( 11 downto 4)    =>   dataLocalBusOut <= "0000" & reg_counter_Coin1_PWM   ;
-            when PWM_Coin2( 11 downto 4)    =>   dataLocalBusOut <= "0000" & reg_counter_Coin2_PWM   ;
-            when PWM_For_E03( 11 downto 4)  =>   dataLocalBusOut <= "0000" & reg_counter_For_E03_PWM ;
+--            when PWM_BH2_Pi( 11 downto 4)   =>   dataLocalBusOut <= "0000" & reg_counter_BH2_Pi_PWM  ;
+--            when PWM_Beam_TOF( 11 downto 4) =>   dataLocalBusOut <= "0000" & reg_counter_Beam_TOF_PWM;
+--            when PWM_Beam_Pi( 11 downto 4)  =>   dataLocalBusOut <= "0000" & reg_counter_Beam_Pi_PWM ;
+--            when PWM_Beam_P( 11 downto 4)   =>   dataLocalBusOut <= "0000" & reg_counter_Beam_P_PWM  ;
+--            when PWM_Coin1( 11 downto 4)    =>   dataLocalBusOut <= "0000" & reg_counter_Coin1_PWM   ;
+--            when PWM_Coin2( 11 downto 4)    =>   dataLocalBusOut <= "0000" & reg_counter_Coin2_PWM   ;
+--            when PWM_For_E03( 11 downto 4)  =>   dataLocalBusOut <= "0000" & reg_counter_For_E03_PWM ;
 
             when DLY_PS_OR( 11 downto 4)    =>   dataLocalBusOut <= "000"  & reg_DLY_PS_OR           ;
+            when DLY_Else_OR( 11 downto 4)    =>   dataLocalBusOut <= "000"  & reg_DLY_Else_OR           ;
 
             when DPWM_delay_Else_OR( 11 downto 4)   =>   dataLocalBusOut <= "000" & reg_delay_Else_OR_Pre   ;
             when DPWM_delay_K_Scat( 11 downto 4)    =>   dataLocalBusOut <= "000" & reg_delay_K_Scat_Pre    ;
@@ -587,7 +694,7 @@ begin
             when DPWM_counter_K_Scat( 11 downto 4)  =>   dataLocalBusOut <= "000" & reg_counter_K_Scat_Pre  ;
 
             when SEL_ctrl( 11 downto 4)             =>   dataLocalBusOut <= "0" & reg_ctrl                ;
-            when RST_PSCNT                          =>   dataLocalBusOut <= "0000000" & reg_RST                 ;
+            when RST_PSCNT( 11 downto 4)            =>   dataLocalBusOut <= "0000000" & reg_RST                 ;
 
 			when others                 =>   dataLocalBusOut <= x"ff";
           end case;
@@ -595,6 +702,7 @@ begin
 
         when Done =>
           readyLocalBus <= '1';
+	  reg_RST <= '0';
           if ( weLocalBus='0' and reLocalBus='0' ) then
             state_lbus <= Idle;
           end if;

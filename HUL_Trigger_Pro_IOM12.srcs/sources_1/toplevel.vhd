@@ -158,6 +158,18 @@ architecture Behavioral of toplevel is
     end component;    
     
     -- Module & Signal ------------------------------------------------------------------------
+  component FDLY is
+  port(
+       rst             : in std_logic;
+       clk_trg         : in std_logic;
+       
+       -- input signal --
+       in1             : in  std_logic;
+       -- output signal --
+       out1            : out std_logic
+      );
+  end component;
+
 
     -- Siganals ------------------------------------------------------
     signal FSU                      : std_logic_vector(31 downto 0);
@@ -177,6 +189,7 @@ architecture Behavioral of toplevel is
     signal TOF                      : std_logic_vector(23 downto 0);
     signal LC_OR                    : std_logic;
     signal TOF_HT                   : std_logic;
+    signal SpillGate                : std_logic;
 --    signal Mtx_3D                   : std_logic;
     signal Other                    : std_logic_vector( 5 downto 1);
     signal Clock                    : std_logic;
@@ -200,6 +213,7 @@ architecture Behavioral of toplevel is
     signal TOF_or_IOM                 : std_logic;
     signal Lucite_or                : std_logic;
     signal TOF_High_Threshold       : std_logic;
+    signal SG                       : std_logic;
 --    signal Matrix_3D                : std_logic;
 
     signal Other1                   : std_logic;
@@ -217,6 +231,9 @@ architecture Behavioral of toplevel is
 
     -- Beam --         
     signal Beam                     : std_logic;
+--    signal Beam_Pregate             : std_logic;
+--    signal Beam_leadingedge             : std_logic;
+--    signal Beam_counter0                : std_logic;
     signal Pi_Beam                  : std_logic;
     signal P_Beam                   : std_logic;
 
@@ -288,6 +305,7 @@ architecture Behavioral of toplevel is
     signal K_Scat_Else_OR  : std_logic;
 
     signal Else_OR         : std_logic;
+    signal Else_OR_DLY         : std_logic;
 
     -- BH2_K --------------------------------------------------
     signal BH2_DLY : std_logic_vector( 7 downto 0 );
@@ -630,7 +648,11 @@ architecture Behavioral of toplevel is
 	        PS_OR_DLY       : out std_logic;
 	        K_Scat_Else_OR  : out std_logic;
 	        Else_OR         : out std_logic;
+	        Else_OR_DLY         : out std_logic;
 
+--    	        BH2_Pi_Pregate            : out std_logic;
+--    	        BH2_Pi_leadingedge             : out std_logic;
+--    	        BH2_Pi_counter0                : out std_logic;
             	-- Local bus --
             	addrLocalBus    : in LocalAddressType;
             	dataLocalBusIn  : in LocalBusInType;
@@ -1000,7 +1022,7 @@ begin
     -- body -----------------------------------------------
 
     -- Synchroniyzer ------------------------------------------------------------------------- 
-	gen_fixed_nim : for i in 1 to 4 generate
+	gen_fixed_nim : for i in 1 to 3 generate
 		u_sync_nim : synchronizer 
 			port map ( 
 	                              CLK            => clk_400MHz,
@@ -1039,7 +1061,7 @@ begin
 				   );
 	end generate;
 
-	gen_fixed_d2 : for i in 16 to 28 generate
+	gen_fixed_d2 : for i in 16 to 27 generate
 		u_sync_fd2 : synchronizer 
 			port map ( 
 				      CLK            => clk_400MHz,
@@ -1056,25 +1078,39 @@ begin
 	FSD_sel_Pre2(11 downto 0) <= Fixed_SigIn_D(27 downto 16);
 	FSD(11 downto  0)  <= FSD_sel1(11 downto 0);
 	FSD(27 downto 16)  <= FSD_sel2(11 downto 0);
-	FSD(12)            <= Fixed_SigIn_D(12);
-	FSD(30 downto 28)  <= Fixed_SigIn_D(30 downto 28);
---	BH1                <= Fixed_Signal_In_Up(10 downto  0);
-	BH1_or_Pre         <= nim_in_Pre(1);
-       gen_BH2 : for i in 0 to 7 generate 
-	       BH2(i) <= Fixed_Signal_In_Up(7-i);
-       end generate;
+--	FSD(12)            <= Fixed_SigIn_D(12);
+	FSD(29 downto 28)  <= Fixed_SigIn_D(29 downto 28);
+	nim_in(4)          <= nim_in_Pre(4);
+	BH1_or_Pre         <= nim_in(1);
+	LC_or              <= nim_in(2);
+	TOF_HT             <= nim_in(3);
+	SpillGate          <= nim_in(4);
+
+        gen_BH2 : for i in 0 to 7 generate 
+           u_BH2_Fixed_Delay_Inst : FDLY
+         	port map(
+                    rst                        => user_reset,
+                    clk_trg                    => clk_400MHz,
+         	    
+         	    -- input signal --
+         	    in1             => Fixed_Signal_In_Up(7-i)       ,
+         	    -- output signal
+         	    out1            => BH2(i)
+         	);
+--	       BH2(i) <= Fixed_Signal_In_Up(7-i);
+        end generate;
+
 --	BH2                <= Fixed_Signal_In_Up( 7 downto  0);
 	SAC                <= Fixed_Signal_In_Up(11 downto  8);
 	Other              <= Fixed_Signal_In_Up(20 downto 16);
---	Clock              <= FSU(21);
---	Reserve2           <= FSU(22);
 	TOF(11 downto  0)  <= Fixed_Signal_In_Down(11 downto  0);
-	TOF_HT             <= Fixed_Signal_In_Down(12);
+--	TOF_HT             <= Fixed_Signal_In_Down(12);
 	TOF(23 downto 12)  <= Fixed_Signal_In_Down(27 downto 16);
-	LC_or              <= Fixed_Signal_In_Down(28);
---	TOF_HT             <= Fixed_Signal_In_Down(29);
-	Clock              <= FSD(29);
-	Reserve2           <= FSD(30);
+--	LC_or              <= Fixed_Signal_In_Down(28);
+--	Clock              <= FSD(29);
+--	Reserve2           <= FSD(30);
+	Clock              <= FSD(28);
+	Reserve2           <= FSD(29);
 --	Mtx_3D             <= Fixed_Signal_In_Down(30);
 	
 --	PS_or_vector       <=  Pi_Beam_PS & 
@@ -1108,16 +1144,10 @@ begin
 	Other3 <= Other(3);
 	Other4 <= Other(4);
 	Other5 <= Other(5);
-	
---	Beam   <= BH2_or ; 
 
---	 process(clk_400MHz)
---	  begin
---	  	if(clk_400MHz'event and clk_400MHz = '1') then
---	  		TOF_or	<= Pre_TOF_or;
---	  	end if;
---	  end process ;
---
+        SG     <= SpillGate when( dip_sw(i_NC2.Index) ='1' ) else '1';
+
+	
 	 process(clk_400MHz)
 	  begin
 	  	if(clk_400MHz'event and clk_400MHz = '1') then
@@ -1179,42 +1209,48 @@ begin
     -- OUT Signal --------------------------------------------------------------------------- 
         gen_out_Else_OR : for i in 0 to 7 generate
 --		dcr_u( i ) <= Else_OR;
-		dcr_u( 2*i ) <= Else_OR;
-           	dcr_u( 2*i+1 ) <= BH2_K(i);
+		dcr_u( 2*i ) <= SG AND Else_OR_DLY;
+           	dcr_u( 2*i+1 ) <= SG AND BH2_K(i);
         end generate;
 --	dcr_u( 15 downto  8 ) <= BH2_K;
 --	dcr_u( 20 downto 16 ) <= Other;
 --	dcr_u(21) <= Clock_sel         ;
 --	dcr_u(22) <= Reserve2_sel      ;
-	dcr_u(16) <= Else_OR          ;
-	dcr_u(17) <= BH2_K_OR          ;
-	dcr_u(18) <= Clock_sel         ;
-	dcr_u(19) <= Reserve2_sel      ;
+	dcr_u(16) <= SG AND Else_OR          ;
+	dcr_u(17) <= SG AND BH2_K_OR          ;
+	dcr_u(18) <= SG AND Clock_sel         ;
+	dcr_u(19) <= SG AND Reserve2_sel      ;
+	dcr_u(20) <= SG      ;
+--	dcr_u(21) <= Beam_leadingedge      ;
+--	dcr_u(22) <= Beam_counter0         ;
 
-	dcr_d( 0) <= BH1_or            ;
-	dcr_d( 1) <= BH2_or            ;
-	dcr_d( 2) <= SAC_or            ;
-	dcr_d( 3) <= TOF_or            ;
-	dcr_d( 4) <= Lucite_or         ;
-	dcr_d( 5) <= TOF_High_Threshold;
-	dcr_d( 10 downto 6 ) <= Other  ;
-	dcr_d(11) <= Beam              ;
-	dcr_d(12) <= Pi_Beam           ;
-	dcr_d(13) <= P_Beam            ;
-	dcr_d(14) <= K_Scat            ;
-	dcr_d(15) <= Beam_TOF          ;
-	dcr_d(16) <= Beam_Pi           ;
-	dcr_d(17) <= Beam_P            ;
-	dcr_d(18) <= Coin1             ;
-	dcr_d(19) <= Coin2             ;
-	dcr_d(20) <= For_E03           ;
-	dcr_d(21) <= BH2_Pi_PS         ;
-	dcr_d(22) <= Beam_TOF_PS       ;
-	dcr_d(23) <= Beam_Pi_PS        ;
-	dcr_d(24) <= Beam_P_PS         ;
-	dcr_d(25) <= Coin1_PS          ;
-	dcr_d(26) <= Coin2_PS          ;
-	dcr_d(27) <= For_E03_PS        ;
+	dcr_d( 0) <= SG AND BH1_or            ;
+	dcr_d( 1) <= SG AND BH2_or            ;
+	dcr_d( 2) <= SG AND SAC_or            ;
+	dcr_d( 3) <= SG AND TOF_or            ;
+	dcr_d( 4) <= SG AND Lucite_or         ;
+	dcr_d( 5) <= SG AND TOF_High_Threshold;
+--	dcr_d( 10 downto 6 ) <= SG AND Other  ;
+        gen_out_Other : for i in 0 to 4 generate
+           	dcr_d( i+6 ) <= SG AND Other(i+1);
+        end generate;
+	dcr_d(11) <= SG AND Beam              ;
+	dcr_d(12) <= SG AND Pi_Beam           ;
+	dcr_d(13) <= SG AND P_Beam            ;
+	dcr_d(14) <= SG AND K_Scat            ;
+	dcr_d(15) <= SG AND Beam_TOF          ;
+	dcr_d(16) <= SG AND Beam_Pi           ;
+	dcr_d(17) <= SG AND Beam_P            ;
+	dcr_d(18) <= SG AND Coin1             ;
+	dcr_d(19) <= SG AND Coin2             ;
+	dcr_d(20) <= SG AND For_E03           ;
+	dcr_d(21) <= SG AND BH2_Pi_PS         ;
+	dcr_d(22) <= SG AND Beam_TOF_PS       ;
+	dcr_d(23) <= SG AND Beam_Pi_PS        ;
+	dcr_d(24) <= SG AND Beam_P_PS         ;
+	dcr_d(25) <= SG AND Coin1_PS          ;
+	dcr_d(26) <= SG AND Coin2_PS          ;
+	dcr_d(27) <= SG AND For_E03_PS        ;
 	dcr_d(28) <= clk1MHz   ;
 	dcr_d(29) <= clk100kHz ;
 	dcr_d(30) <= clk10kHz  ;
@@ -1504,7 +1540,11 @@ begin
 	    PS_OR_DLY       => PS_OR_DLY      , 
 	    K_Scat_Else_OR  => K_Scat_Else_OR , 
 	    Else_OR         => Else_OR        , 
+	    Else_OR_DLY         => Else_OR_DLY        , 
 
+--            BH2_Pi_Pregate          => Beam_Pregate       , 
+--            BH2_Pi_leadingedge          => Beam_leadingedge       , 
+--            BH2_Pi_counter0             => Beam_counter0          , 
             -- Local bus --
             addrLocalBus        => addr_LocalBus, 
             dataLocalBusIn      => data_LocalBusIn,
@@ -1667,7 +1707,7 @@ begin
     system_reset    <= (NOT clk_trg_locked) OR (Not clk_sys_locked);
     user_reset      <= ( (NOT clk_trg_locked) OR (Not clk_sys_locked) ) OR rst_from_bus;
     
-    --dip_sw(0)   <= NOT DIP(0);
+    dip_sw(0)   <= NOT DIP(0);
     dip_sw(1)   <= NOT DIP(1);
     dip_sw(2)   <= NOT DIP(2);
     dip_sw(3)   <= NOT DIP(3);

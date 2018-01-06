@@ -17,6 +17,9 @@ entity PS is
 
     -- output signal --
       out1  : out std_logic;
+--      hoge  : out std_logic;
+--      hoge1  : out std_logic;
+--      hoge2  : out std_logic;
     
     -- register --
       reg_counter :in std_logic_vector(23 downto 0)
@@ -42,6 +45,9 @@ architecture RTL of PS is
   
   signal in_1         : std_logic;
   signal out_1        : std_logic;
+--  signal in_hoge       : std_logic;
+--  signal in_hoge1       : std_logic;
+--  signal in_hoge2       : std_logic;
 
 --	component EDG is
 --             port (
@@ -59,7 +65,13 @@ begin
 	din_edge <= synchro(1) & synchro(0); 
 	in_1     <= in1;
 	out1     <= out_1;
+--	hoge     <= in_hoge;
+--	hoge1     <= in_hoge1;
+--	hoge2     <= in_hoge2;
 	out_1    <= pre_gate and leading_edge;
+--	in_hoge  <= pre_gate;
+--	in_hoge1  <= leading_edge;
+--	in_hoge2  <= counter(0);
 --	out_1    <= pre_gate and din_edge;
 
 --        counter_max  <= reg_counter & const1;
@@ -104,12 +116,11 @@ begin
 		      counter  <= ( others => '0');
 		  elsif(leading_edge'event and leading_edge = '1' ) then
 --		  elsif(din_edge'event and din_edge = '1' ) then
-		        counter <= counter + '1';
     		      if(counter = counter_max ) then
-                       counter  <= ( others => '0');
-              else
+                        counter  <= ( others => '0');
+	               else
 		        counter <= counter + '1';
-                  end if;
+                      end if;
 		  end if;
 	end process;
 
@@ -118,11 +129,11 @@ begin
 	  	  if( rst = '1' ) then
 		      pre_gate <= '0';
 		  elsif(clk_trg'event and clk_trg = '1' ) then
-    	      if(counter = counter_max ) then
-                   pre_gate <= '1';
-              else
-                   pre_gate <= '0';
-              end if;
+    	            if(counter = counter_max ) then
+                         pre_gate <= '1';
+                    else
+                         pre_gate <= '0';
+                    end if;
 		  end if;
 	end process;
 

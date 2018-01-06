@@ -166,6 +166,18 @@ architecture RTL of Region1 is
         signal reg_coin_K_Scat   : std_logic_vector(5 downto 0);
 
   -- Modules  -------------------------------------------------------------
+--  component FDLY is
+--  port(
+--       rst             : in std_logic;
+--       clk_trg         : in std_logic;
+--       
+--       -- input signal --
+--       in1             : in  std_logic;
+--       -- output signal --
+--       out1            : out std_logic
+--      );
+--  end component;
+
   component DPWM is
   port(
        rst             : in std_logic;
@@ -264,6 +276,18 @@ begin
                 in_BH2_or            <=  BH2_or          ;
           	end if;
           end process ;
+
+--  -- FDLY ---------------------------------------------------------------------------
+--  BH2_Or_Fixed_Delay_Inst : FDLY
+--	port map(
+--	    rst             => rst    ,
+--	    clk_trg         => clk_trg,
+--	    
+--	    -- input signal --
+--	    in1             =>BH2_or        ,
+--	    -- output signal
+--	    out1            =>in_BH2_or
+--	);
 
   -- DPWM ---------------------------------------------------------------------------
   -- BH1 --
