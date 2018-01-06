@@ -489,7 +489,7 @@ begin
             when DPWM_counter_K_Scat  => reg_counter_K_Scat_Pre  <= dataLocalBusIn( 4 downto 0);
 
             when SEL_ctrl             => reg_ctrl                <= dataLocalBusIn( 6 downto 0);
-            when RST_PSCNT            => reg_RST                 <= dataLocalBusIn(0);
+            when RST_PSCNT            => reg_RST                 <= dataLocalBusIn( 6 downto 0);
 
             when others => null;
           end case;
